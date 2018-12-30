@@ -34,7 +34,7 @@ def process(img_path: str):
 
     gray_img = cv2.cvtColor(ed_img, cv2.COLOR_BGR2GRAY)
     edge_output = cv2.Canny(gray_img, 50, 255)
-    circles = cv2.HoughCircles(edge_output, cv2.HOUGH_GRADIENT, 2, 50)
+    circles = cv2.HoughCircles(edge_output, cv2.HOUGH_GRADIENT, 2, 100, maxRadius=150)
     if circles is None:
         return
 
