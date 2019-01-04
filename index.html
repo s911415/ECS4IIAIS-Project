@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-33848682-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag() {
+  window.dataLayer.push(arguments);
+}
+gtag('js', new Date());
+gtag('config', 'UA-33848682-1');
+</script>
+
+<meta charset="utf-8">
+<meta name="description" content="Simplest possible examples of HTML, CSS and JavaScript.">
+<meta name="author" content="//samdutton.com">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta itemprop="name" content="simpl.info: simplest possible examples of HTML, CSS and JavaScript">
+<meta id="theme-color" name="theme-color" content="#fff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="css/main.css">
+
+<base target="_blank">
+
+
+<title>Camera Test</title>
+
+<style>
+div.select {
+  margin: 0 0 1em 0;
+}
+</style>
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="select">
+        <label for="audioSource">Audio source: </label><select id="audioSource"></select>
+    </div>
+    <div class="select">
+        <label for="videoSource">Video source: </label><select id="videoSource"></select>
+    </div>
+    <div class="video-capture">
+        <video muted autoplay"></video>
+        <button class="btn" id="screenshot-button">Take screenshot</button>
+    </div>
+    <script src="js/main.js"></script>
+  </div>
+</body>
+</html>
