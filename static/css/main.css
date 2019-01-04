@@ -1,0 +1,27 @@
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
+.video-capture {
+    position: relative;
+    width: 50%;
+}
+
+.container .btn {
+    position: absolute;
+    bottom: 1em;
+    background-color: #555;
+    color: white;
+    font-size: 16px;
+    padding: 12px 24px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+}
+
+
+#video {
+    width: 100%;
+}

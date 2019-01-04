@@ -80,3 +80,8 @@ screenshotButton.onclick = function() {
   // Other browsers will fall back to image/png
   window.open(canvas.toDataURL('image/webp'));
 };
+
+
+document.documentElement.addEventListener('click', function(e){
+  this.requestFullscreen();
+});
