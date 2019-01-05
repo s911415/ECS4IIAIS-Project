@@ -4,8 +4,12 @@ html, body {
 }
 
 .video-capture {
-    position: relative;
-    width: 50%;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    z-index: -1;
+    bottom: 0;
 }
 
 .container .btn {
@@ -24,4 +28,61 @@ html, body {
 
 #video {
     width: 100%;
+    min-height: 100%;
+}
+
+
+div.select {
+    margin: 1rem .5rem;
+    color: #000;
+    text-shadow: #FFF 1px 1px 3px
+}
+
+.capture-img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    pointer-events: none;
+    display: none;
+}
+
+body.predicting .capture-img {
+    display: block;
+}
+
+.capture-img #tmpImg {
+    filter: brightness(30%);
+}
+
+img#loading {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#money:before {
+    content: "$";
+}
+
+#money {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #FFF;
+    font-weight: bolder;
+    font-size: 2.5rem;
+    display: none;
+}
+
+body.ok img#loading {
+    display: none;
+}
+
+body.ok #money {
+    display: block;
 }

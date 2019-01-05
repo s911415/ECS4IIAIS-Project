@@ -14,15 +14,15 @@ limitations under the License.
 'use strict';
 
 var videoElement = document.querySelector('video');
-var audioSelect = document.querySelector('select#audioSource');
 var videoSelect = document.querySelector('select#videoSource');
 const screenshotButton = document.querySelector('#screenshot-button');
 const canvas = document.createElement('canvas');
+const moneyElem = document.getElementById('money');
+const tmpImg = document.getElementById('tmpImg');
 
 navigator.mediaDevices.enumerateDevices()
   .then(gotDevices).then(getStream).catch(handleError);
 
-audioSelect.onchange = getStream;
 videoSelect.onchange = getStream;
 
 function gotDevices(deviceInfos) {
@@ -30,11 +30,7 @@ function gotDevices(deviceInfos) {
     var deviceInfo = deviceInfos[i];
     var option = document.createElement('option');
     option.value = deviceInfo.deviceId;
-    if (deviceInfo.kind === 'audioinput') {
-      option.text = deviceInfo.label ||
-        'microphone ' + (audioSelect.length + 1);
-      audioSelect.appendChild(option);
-    } else if (deviceInfo.kind === 'videoinput') {
+    if (deviceInfo.kind === 'videoinput') {
       option.text = deviceInfo.label || 'camera ' +
         (videoSelect.length + 1);
       videoSelect.appendChild(option);
@@ -52,11 +48,10 @@ function getStream() {
   }
 
   var constraints = {
-    audio: {
-      deviceId: {exact: audioSelect.value}
-    },
     video: {
-      deviceId: {exact: videoSelect.value}
+      deviceId: {exact: videoSelect.value},
+      width: {ideal: screen.availHeight},
+      height: {ideal: screen.availWidth},
     }
   };
 
@@ -77,34 +72,56 @@ screenshotButton.onclick = function() {
   canvas.width = videoElement.videoWidth;
   canvas.height = videoElement.videoHeight;
   canvas.getContext('2d').drawImage(videoElement, 0, 0);
-  let win = window.open('about:blank');
-  canvas.toBlob(b=>{
+  document.body.classList.add('predicting');
+  let predictCleanup = () => {
+    tmpImg.src = '';
+    moneyElem.textContent = total.toString();
+
+    document.body.classList.remove('predicting');
+    document.body.classList.remove('ok');
+  };
+  canvas.toBlob(b => {
     let blobUrl = URL.createObjectURL(b);
-    win.location.href = blobUrl;
-    win.onload = function(){
-        URL.revokeObjectURL(blobUrl);
+    tmpImg.src = blobUrl;
+    tmpImg.onload = function () {
+      if(!blobUrl) return;
+      URL.revokeObjectURL(blobUrl);
+      blobUrl = null;
     };
     let fd = new FormData();
     fd.append('im', b);
     fetch('/predict', {
       method: 'POST',
       body: fd
-    }).then(r=>{
+    }).then(r => {
       let data = r.headers.get('data');
-      if(data) {
-          data = JSON.parse(data);
+      if (data) {
+        data = JSON.parse(data);
       }
-      return r.json().then(json=>{
-          return [json, data];
+      return r.blob().then(b => {
+        return [b, data];
       });
-    }).then(d=>{
-        let [json, data] = d;
-        // TODO: calc money
+    }).then(d => {
+      let [blob, data] = d;
+      // [{"label": "1", "score": 0.9972336888313293}, {"label": "1", "score": 0.9921825528144836}]
+      let total = data.map(coin=>coin.label*1).reduce((a, b)=>a+b, 0);
+      blobUrl = URL.createObjectURL(blob);
+      tmpImg.src = blobUrl;
+      setTimeout(()=>{
+        moneyElem.textContent = total.toString();
+        document.body.classList.add('ok');
+        setTimeout(()=>{
+          predictCleanup();
+        }, 3000);
+      }, 750);
+    }).catch(e => {
+      console.error(e);
+      predictCleanup();
     });
   }, 'image/jpeg');
 };
 
-let fulled = true;
+let fulled = false;
 document.documentElement.addEventListener('click', function(e){
   if(fulled) return;
   document.documentElement.requestFullscreen();
