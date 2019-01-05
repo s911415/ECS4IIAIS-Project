@@ -3,28 +3,30 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 
+import multiprocessing.dummy as mp
 import cv2
 import numpy as np
 
 CIRCLE_IMG_TMP_DIR = './out/circles/'
 ANNOTATIONS_DIR = './out/Annotations/'
+param_label = None
 ANNOTATIONS_TEMPLATE_CONTENT = ''
 ANNOTATIONS_TEMPLATE_OBJECT_CONTENT = """<object>
-		<name></name>
-		<pose>Unspecified</pose>
-		<truncated>0</truncated>
-		<difficult>0</difficult>
-		<bndbox>
-			<xmin></xmin>
-			<ymin></ymin>
-			<xmax></xmax>
-			<ymax></ymax>
-		</bndbox>
-	</object>"""
+        <name></name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin></xmin>
+            <ymin></ymin>
+            <xmax></xmax>
+            <ymax></ymax>
+        </bndbox>
+    </object>"""
 
 
 def process(img_path: str):
-    global ANNOTATIONS_TEMPLATE_CONTENT
+    global ANNOTATIONS_TEMPLATE_CONTENT, param_label
     file_name = os.path.basename(img_path)
     img = cv2.imread(img_path)
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
@@ -56,7 +58,7 @@ def process(img_path: str):
         })
 
     # cv2.imshow('detected circles', cimg)
-    cv2.imwrite(os.path.join(CIRCLE_IMG_TMP_DIR, file_name), cimg)
+    # cv2.imwrite(os.path.join(CIRCLE_IMG_TMP_DIR, file_name), cimg)
 
     # write xml
     root = ET.fromstring(ANNOTATIONS_TEMPLATE_CONTENT)
@@ -68,7 +70,7 @@ def process(img_path: str):
 
     for circle in circle_data_list:
         obj = ET.fromstring(ANNOTATIONS_TEMPLATE_OBJECT_CONTENT)
-        obj.find('./name').text = 'Unknown'
+        obj.find('./name').text = 'Unknown' if param_label is None else param_label
         obj.find('./bndbox/xmin').text = str(circle["left"])
         obj.find('./bndbox/xmax').text = str(circle["right"])
         obj.find('./bndbox/ymin').text = str(circle["top"])
@@ -93,13 +95,11 @@ if __name__ == '__main__':
             os.mkdir(dir_path)
 
     load_template()
+    if len(sys.argv) == 3:
+        param_label = sys.argv[2]
 
-    # process(sys.argv[1])
-
-    img_files = glob.glob(os.path.join(sys.argv[1], "*.png"))
-    for img_path in img_files:
-        try:
-            process(img_path)
-        except Exception as e:
-            print("Error when processing image: " + img_path)
-            raise e
+    p = mp.Pool()
+    img_files = glob.glob(os.path.join(sys.argv[1], "*.jpg"))
+    p.map(process, img_files)
+    p.close()
+    p.join()
