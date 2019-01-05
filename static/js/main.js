@@ -75,7 +75,7 @@ screenshotButton.onclick = function() {
   document.body.classList.add('predicting');
   let predictCleanup = () => {
     tmpImg.src = '';
-    moneyElem.textContent = total.toString();
+    moneyElem.textContent = '';
 
     document.body.classList.remove('predicting');
     document.body.classList.remove('ok');

@@ -55,6 +55,13 @@ body.predicting .capture-img {
 
 .capture-img #tmpImg {
     filter: brightness(30%);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
 }
 
 img#loading {
@@ -75,7 +82,7 @@ img#loading {
     transform: translate(-50%, -50%);
     color: #FFF;
     font-weight: bolder;
-    font-size: 2.5rem;
+    font-size: 3rem;
     display: none;
 }
 
