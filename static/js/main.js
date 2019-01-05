@@ -77,11 +77,36 @@ screenshotButton.onclick = function() {
   canvas.width = videoElement.videoWidth;
   canvas.height = videoElement.videoHeight;
   canvas.getContext('2d').drawImage(videoElement, 0, 0);
-  // Other browsers will fall back to image/png
-  window.open(canvas.toDataURL('image/webp'));
+  let win = window.open('about:blank');
+  canvas.toBlob(b=>{
+    let blobUrl = URL.createObjectURL(b);
+    win.location.href = blobUrl;
+    win.onload = function(){
+        URL.revokeObjectURL(blobUrl);
+    };
+    let fd = new FormData();
+    fd.append('im', b);
+    fetch('/predict', {
+      method: 'POST',
+      body: fd
+    }).then(r=>{
+      let data = r.headers.get('data');
+      if(data) {
+          data = JSON.parse(data);
+      }
+      return r.json().then(json=>{
+          return [json, data];
+      });
+    }).then(d=>{
+        let [json, data] = d;
+        // TODO: calc money
+    });
+  }, 'image/jpeg');
 };
 
-
+let fulled = true;
 document.documentElement.addEventListener('click', function(e){
-  this.requestFullscreen();
+  if(fulled) return;
+  document.documentElement.requestFullscreen();
+  fulled = true;
 });
