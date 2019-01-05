@@ -49,7 +49,7 @@ if __name__ == '__main__':
         p = secrets_generator.randint(0, 100)
         fn_wo_ext = os.path.splitext(fn)[0]
         fio = train_f
-        if p > 70:
+        if p > 75:
             fio = test_f
 
         fio.write(fn_wo_ext)

@@ -3,6 +3,7 @@ import multiprocessing.dummy as mp
 import os
 import secrets
 import sys
+import time
 import uuid
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element
@@ -13,6 +14,7 @@ import numpy as np
 NEW_DATA_DIR = './out/new_dataset/'
 
 secrets_generator = secrets.SystemRandom()
+START_TIME = int(time.time())
 
 
 def extract_object(e: Element):
@@ -84,15 +86,15 @@ def generate_new_image(xml_path: str, repeat_cnt=None):
                 cv2.circle(mask, center, r, (255, 255, 255), -1)
 
             offset_h, offset_l, offset_s = \
-                secrets_generator.randint(-20, 20), \
-                secrets_generator.randint(-80, 80), \
-                secrets_generator.randint(-20, 20)
+                secrets_generator.randint(-10, 10), \
+                secrets_generator.randint(-50, 50), \
+                secrets_generator.randint(-10, 10)
 
-            blur_k = secrets_generator.randint(1, 4)
+            # blur_k = secrets_generator.randint(1, 4)
 
             bg_mask = cv2.bitwise_not(mask)
             coin_im = cv2.bitwise_and(im, mask)
-            coin_im = cv2.blur(coin_im, (blur_k, blur_k))
+            # coin_im = cv2.blur(coin_im, (blur_k, blur_k))
             bg_im = im.copy()
 
             # change h on background
@@ -103,7 +105,7 @@ def generate_new_image(xml_path: str, repeat_cnt=None):
             cv2.addWeighted(coin_im, 1, combined_im, 1, 0, combined_im)
             combined_im = change_hls(combined_im, (0, offset_l, offset_s))
 
-            new_filename = os.path.join(NEW_DATA_DIR, img_filename) + '_' + str(uuid.uuid4())
+            new_filename = os.path.join(NEW_DATA_DIR, str(START_TIME) + '_' + img_filename) + '_' + str(uuid.uuid4())
             new_img_name = new_filename + img_file_extension
             new_xml_name = new_filename + '.xml'
 
