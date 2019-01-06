@@ -5,5 +5,16 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library" scope="PROVIDED">
+      <library>
+        <CLASSES />
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://T:/lab6/tf-faster-rcnn-windows/lib" />
+          <root url="file://T:/lab6/tf-faster-rcnn-windows/tools" />
+          <root url="file://T:/lab6/tf-faster-rcnn-windows" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>
