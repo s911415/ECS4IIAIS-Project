@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Test</title>
+</head>
+<body>
+<form enctype="multipart/form-data" method="POST" action="/predict" target="result">
+    <input type="file" accept="image/*" name="im"/>
+    <button type="submit" id="submitBtn" onclick="setTimeout(()=>this.disabled = true)">Submit</button>
+</form>
+
+<iframe name="result" frameborder="0" id="iframe"></iframe>
+<script>
+iframe.addEventListener('load', function () {
+    document.getElementById('submitBtn').disabled = false;
+    let img = this.contentDocument.images[0];
+
+    if (img) {
+        let [w, h] = [img.naturalWidth, img.naturalHeight];
+        this.style.width = w + 'px';
+        this.style.height = h + 'px';
+    }
+})
+</script>
+</body>
+</html>

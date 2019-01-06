@@ -7,6 +7,7 @@ import time
 import uuid
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element
+import numpy as np
 
 import cv2
 import numpy as np
@@ -138,12 +139,11 @@ def generate_new_image_with_blur(xml_path: str, repeat_cnt=None):
         if im is None:
             print("Cannot open " + im_path, file=sys.stderr)
             return
-
+        kernel_num = np.random.permutation(range(2, 6))
         for cnt in range(repeat_cnt):
             h, w, c = im.shape
-            blur_k = secrets_generator.randint(2, 6)
             bg_im = im.copy()
-            combined_im = cv2.blur(bg_im, (blur_k, blur_k))
+            combined_im = cv2.blur(bg_im, (kernel_num[cnt], kernel_num[cnt]))
 
             new_filename = os.path.join(NEW_DATA_DIR, str(START_TIME) + '_' + img_filename) + '_' + str(uuid.uuid4())
             new_img_name = new_filename + img_file_extension
