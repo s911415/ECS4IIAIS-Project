@@ -117,6 +117,46 @@ def generate_new_image(xml_path: str, repeat_cnt=None):
             # cv2.imshow(str(uuid.uuid4()), combined_im)
 
 
+def generate_new_image_with_blur(xml_path: str, repeat_cnt=None):
+    if repeat_cnt is None:
+        repeat_cnt = secrets_generator.randint(1, 3)
+
+    xml_doc = ET.parse(xml_path)
+    path_elem = xml_doc.find('./path')
+    if path_elem is not None:
+        xml_doc.getroot().remove(path_elem)
+
+    file_name = xml_doc.find('./filename').text
+    objects = xml_doc.findall('./object')
+    objs = list(map(extract_object, objects))
+    labeled_cnt = len(list(filter(lambda e: e[0] != 'Unknown', objs)))
+
+    if labeled_cnt == len(objs):
+        im_path = os.path.join(os.path.dirname(xml_path), file_name)
+        img_filename, img_file_extension = os.path.splitext(os.path.basename(im_path))
+        im = cv2.imread(im_path)
+        if im is None:
+            print("Cannot open " + im_path, file=sys.stderr)
+            return
+
+        for cnt in range(repeat_cnt):
+            h, w, c = im.shape
+            blur_k = secrets_generator.randint(2, 6)
+            bg_im = im.copy()
+            combined_im = cv2.blur(bg_im, (blur_k, blur_k))
+
+            new_filename = os.path.join(NEW_DATA_DIR, str(START_TIME) + '_' + img_filename) + '_' + str(uuid.uuid4())
+            new_img_name = new_filename + img_file_extension
+            new_xml_name = new_filename + '.xml'
+
+            cv2.imwrite(new_img_name, combined_im)
+            xml_doc.find('./filename').text = os.path.basename(new_img_name)
+            xml_doc.write(new_xml_name, encoding='utf8')
+            # cv2.imshow("coin", coin_im)
+            # cv2.imshow("bg", bg_im)
+            # cv2.imshow(str(uuid.uuid4()), combined_im)
+
+
 if __name__ == '__main__':
     # for i in range(1):
     #     generate_new_image('T:\emb_fin\images\\190103_005.xml', 2)
@@ -127,7 +167,7 @@ if __name__ == '__main__':
 
     xml_files = glob.glob(os.path.join(sys.argv[1], "*.xml"))
     p = mp.Pool()
-    p.map(generate_new_image, xml_files)  # range(0,1000) if you want to replicate your example
+    p.map(generate_new_image_with_blur, xml_files)
     p.close()
     p.join()
     # for xml_path in xml_files:
